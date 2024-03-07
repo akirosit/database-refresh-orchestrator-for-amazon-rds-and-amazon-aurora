@@ -34,7 +34,7 @@ def lambda_handler(event, context):
         dbservice = event['dbservice']
         cluster = event['cluster']
         
-        newcluster = cluster[:-4]
+        newcluster = event['cluster_newname']
         
         rdsclient = boto3.client('rds', region_name=awsregion)
         

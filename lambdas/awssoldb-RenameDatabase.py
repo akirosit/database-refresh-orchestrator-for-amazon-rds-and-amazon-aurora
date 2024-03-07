@@ -31,12 +31,13 @@ def lambda_handler(event, context):
     torun = event['torun']
     
     if torun == "true":
+        awsregion = os.environ['AWS_REGION']
         dbservice = event['dbservice']
         dbinstance = event['dbinstance']
         
-        newdbinstance = dbinstance[:-4]
+        newdbinstance = dbinstance = event['dbinstance_newname']
         
-        rdsclient = boto3.client('rds', region_name='us-east-1')
+        rdsclient = boto3.client('rds', region_name=awsregion)
         
         if dbservice == 'rds' or dbservice == 'aurora':
             response = rdsclient.describe_db_instances(

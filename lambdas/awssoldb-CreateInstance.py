@@ -32,7 +32,7 @@ def lambda_handler(event, context):
         
         cluster = event['cluster']
         
-        tempdbinstance = dbinstance + "temp"
+        tempdbinstance = dbinstance
         
         rdsclient = boto3.client('rds', region_name=awsregion)
         

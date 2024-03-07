@@ -42,7 +42,7 @@ def lambda_handler(event, context):
             autominor = str2bool(event['autominor'])
             dbparamgrp = event['dbparamgrp']
             
-            tempdbinstance = target + "temp"
+            tempdbinstance = target
             
             if storagetype == "io1":
                 iops = event['iops']
@@ -319,7 +319,7 @@ def lambda_handler(event, context):
             cluparamgrp = event['cluparamgrp']
             engine = event['engine']
 
-            temptargetcluster = targetcluster + "temp"
+            temptargetcluster = targetcluster
             
             if restoretype == 'latestpoint' or restoretype == 'fastcloning':
                 
@@ -335,7 +335,7 @@ def lambda_handler(event, context):
                 latestrestorablepoint = str(cludesc['DBClusters'][0]['LatestRestorableTime'])
                 
                 if engine == "aurora" or engine == "aurora-mysql":
-                    backtrack = event['backtrack']
+                    #backtrack = event['backtrack']
                     
                     response = rdsclient.restore_db_cluster_to_point_in_time(
                         DBClusterIdentifier=temptargetcluster,
@@ -366,7 +366,7 @@ def lambda_handler(event, context):
                             }
                         ],
                         EnableIAMDatabaseAuthentication=iamdbauth,
-                        BacktrackWindow=backtrack,
+                        #BacktrackWindow=backtrack,
                         EnableCloudwatchLogsExports=cwalogslist,
                         DBClusterParameterGroupName=cluparamgrp,
                         DeletionProtection=deletionprotection,

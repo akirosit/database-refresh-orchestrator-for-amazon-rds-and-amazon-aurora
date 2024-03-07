@@ -8,7 +8,8 @@ def lambda_handler(event, context):
     torun = event['torun']
 
     if torun == "true":
-        sns = boto3.client("sns", region_name = "us-east-1")
+        awsregion = os.environ['AWS_REGION']
+        sns = boto3.client("sns", region_name = awsregion)
     
         service = event['dbservice']
         application = event["application"]
@@ -22,7 +23,7 @@ def lambda_handler(event, context):
         msg = "The restore of the database instance " + dbinstance + " has failed."
         
         snsresponse = sns.publish(
-            TargetArn=topicarn,
+            TopicArn=topicarn,
             Subject=subj,
             Message=msg
         )

@@ -29,7 +29,7 @@ def lambda_handler(event, context):
         msg = "The restore of the database instance " + dbinstance + " has completed. \r ** Here the details about the restore: \r _Service: " + dbservice + "\r _Application: " + application + "\r _Environment: " + environment + "\r _Source: " + source + "\r _DBInstance: " + dbinstance + "\r _RestoreType: " + restoretype + "\r **Here the details about the database instance: \r" + str(rdsresponse["DBInstances"])
         
         snsresponse = sns.publish(
-            TargetArn=topicarn,
+            TopicArn=topicarn,
             Subject=subj,
             Message=msg
         )

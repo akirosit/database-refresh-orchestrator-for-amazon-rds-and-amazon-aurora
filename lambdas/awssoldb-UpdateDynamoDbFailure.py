@@ -13,6 +13,8 @@ def lambda_handler(event, context):
     torun = event['torun']
 
     if torun == "true":
+        awsregion = os.environ['AWS_REGION']
+
         dbservice = event['dbservice']
         application = event['application']
         environment = event['environment']
@@ -29,10 +31,10 @@ def lambda_handler(event, context):
         #https://www.programiz.com/python-programming/datetime/strftime
         recordingtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-        dynamoDbClient = boto3.client('dynamodb', region_name='us-east-1')
+        dynamoDbClient = boto3.client('dynamodb', region_name=awsregion)
         
         if restoretype == "fromsnapshot":
-            rdsClient = boto3.client('rds', region_name='us-east-1')
+            rdsClient = boto3.client('rds', region_name=awsregion)
             
             snapshot = event['snapshot']
             
