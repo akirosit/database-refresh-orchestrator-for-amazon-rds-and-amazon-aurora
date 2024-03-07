@@ -1,0 +1,97 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+      "paramDBPwd": {
+        "Type": "String"
+      },
+      "vpcSecurityGroupForDB": {
+        "Type": "String"
+      }
+    },
+    "Resources": {
+      "dynamodbTable": {
+        "Type" : "AWS::DynamoDB::Table",
+        "Properties" : {
+         "AttributeDefinitions" : [ { "AttributeName" : "dbinstance", "AttributeType" : "S" }, { "AttributeName" : "restoredate", "AttributeType" : "S" } ],
+         "BillingMode" : "PROVISIONED",
+         "KeySchema" : [{"AttributeName":"dbinstance","KeyType":"HASH"},{"AttributeName":"restoredate","KeyType":"RANGE"}],
+         "ProvisionedThroughput" : {"ReadCapacityUnits":5,"WriteCapacityUnits":5},
+         "TableName" : "dbalignment-awssol",
+         "Tags" : [ { "Key": "Name", "Value": "DbRestore" } ],
+         "SSESpecification" :
+         {
+          "SSEEnabled" : true,
+          "SSEType" : "KMS"
+         }
+        }
+      },
+     "RDSdatabase": {
+      "Type" : "AWS::RDS::DBInstance",
+      "Properties" : {
+       "AllocatedStorage" : 5,
+       "AutoMinorVersionUpgrade": false,
+       "BackupRetentionPeriod" : 1,
+       "CopyTagsToSnapshot" : true,
+       "DBInstanceClass" : "db.t3.medium",
+       "DBInstanceIdentifier" : "mysqlinstp",
+       "DBName" : "mysqldbp",
+       "DBSubnetGroupName" : "default",
+       "DeleteAutomatedBackups" : true,
+       "DeletionProtection" : false,
+       "EnableCloudwatchLogsExports" : [ "general" ],
+       "EnableIAMDatabaseAuthentication" : true,
+       "EnablePerformanceInsights" : true,
+       "Engine" : "mysql",
+       "EngineVersion" : "5.7.22",
+       "MasterUsername" : "admin",
+       "MasterUserPassword" : { "Ref": "paramDBPwd" },
+       "MultiAZ" : true,
+       "PerformanceInsightsRetentionPeriod" : 7,
+       "Port" : "3307",
+       "PubliclyAccessible" : false,
+       "StorageEncrypted" : true,
+       "StorageType" : "gp2",
+       "VPCSecurityGroups" : [ { "Ref": "vpcSecurityGroupForDB" } ]
+      }
+     },
+     "AuroraCluster": {
+      "Type" : "AWS::RDS::DBCluster",
+      "Properties" : {
+       "BackupRetentionPeriod" : 1,
+       "DatabaseName" : "auposdb",
+       "DBClusterIdentifier" : "auposclup",
+       "DBClusterParameterGroupName" : "default.aurora-postgresql10",
+       "DBSubnetGroupName" : "default",
+       "DeletionProtection" : false,
+       "EnableCloudwatchLogsExports" : [ "postgresql" ],
+       "EnableHttpEndpoint" : true,
+       "EnableIAMDatabaseAuthentication" : true,
+       "Engine" : "aurora-postgresql",
+       "EngineMode" : "provisioned",
+       "EngineVersion" : "10.11",
+       "MasterUsername" : "postgres",
+       "MasterUserPassword" : { "Ref": "paramDBPwd" },
+       "Port" : 5433,
+       "StorageEncrypted" : true,
+       "VpcSecurityGroupIds" : [ { "Ref": "vpcSecurityGroupForDB" } ]
+      }
+     },
+     "AuroraInstance": {
+      "Type" : "AWS::RDS::DBInstance",
+      "Properties" : {
+       "AutoMinorVersionUpgrade": false,
+       "CopyTagsToSnapshot" : true,
+       "DBInstanceClass" : "db.t3.medium",
+       "DBInstanceIdentifier" : "auposinstp",
+       "DBSubnetGroupName" : "default",
+       "Engine" : "aurora-postgresql",
+       "EnablePerformanceInsights" : true,
+       "DBParameterGroupName" : "default.aurora-postgresql10",
+       "PerformanceInsightsRetentionPeriod" : 7,
+       "PubliclyAccessible" : false,
+       "DBClusterIdentifier" : { "Ref": "AuroraCluster" }
+      }
+     }
+    },
+    "Description": "awssoldb_storage"
+}
