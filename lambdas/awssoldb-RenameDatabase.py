@@ -35,11 +35,13 @@ def lambda_handler(event, context):
         dbservice = event['dbservice']
         dbinstance = event['dbinstance']
         
-        newdbinstance = dbinstance = event['dbinstance_newname']
+        newdbinstance = event['dbinstance_newname']
+        logger.info("Renaming database: " + dbinstance + " to " + newdbinstance)
         
         rdsclient = boto3.client('rds', region_name=awsregion)
         
         if dbservice == 'rds' or dbservice == 'aurora':
+            
             response = rdsclient.describe_db_instances(
                 DBInstanceIdentifier=dbinstance
             )            

@@ -4,20 +4,21 @@ import json
 from botocore.exceptions import ClientError
 import logging
 
-if len(sys.argv) != 5:
-    print('Usage: python3 launch_refresh.py <target_instance_name> <application_name> <state_machine_arn> <region>')
+if len(sys.argv) != 4:
+    print('Usage: python3 launch_refresh.py <application_name> <state_machine_name> <region>')
     print('  Example:')
-    print('  python3 launch_refresh.py dbinstance1 alpha arn:aws:states:us-east-1:123456789012:stateMachine:state-machine-awssol us-east-1')
+    print('  python3 launch_refresh.py app1 state-machine-awssol us-east-1')
     print('')
     sys.exit('[Error] Missing or invalid parameters')
 else:
-    target_instance_name = sys.argv[1]
-    application_name = sys.argv[2]
-    state_machine_arn = sys.argv[3]
-    region = sys.argv[4]
+    application_name = sys.argv[1]
+    state_machine_name = sys.argv[2]
+    region = sys.argv[3]
+    aws_account_id = boto3.client('sts').get_caller_identity().get('Account')
     
     dbjsondir = "./db-json/" + region
-    dbjsonfile = dbjsondir + "/db-" + application_name + "-" + target_instance_name + ".json"
+    dbjsonfile = dbjsondir + "/db-" + application_name + ".json"
+    state_machine_arn = "arn:aws:states:" + region + ":" + aws_account_id + ":stateMachine:" + state_machine_name
     stepfunctions_client = boto3.client('stepfunctions', region_name=region)
 
     try:
