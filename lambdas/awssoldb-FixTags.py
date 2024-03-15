@@ -60,7 +60,7 @@ def lambda_handler(event, context):
             dbinstance = event['dbinstance']
             dbarn = event['dbarn']
             
-            rdsclient = boto3.client('rds', region_name='us-east-1')
+            rdsclient = boto3.client('rds', region_name=awsregion)
 
             if VerifyTags(rdsclient, dbarn):
                 response = rdsclient.add_tags_to_resource(
